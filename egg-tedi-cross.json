@@ -1,0 +1,52 @@
+{
+    "_comment": "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PTERODACTYL PANEL - PTERODACTYL.IO",
+    "meta": {
+        "version": "PTDL_v2",
+        "update_url": null
+    },
+    "exported_at": "2024-12-12T09:54:12+07:00",
+    "name": "TediCross",
+    "author": "artem0savkin@vk.com",
+    "description": "Bot which bridges Telegram chats with Discord channels.\r\nhttps:\/\/github.com\/TediCross\/TediCross?tab=readme-ov-file#step-by-step-installation",
+    "features": null,
+    "docker_images": {
+        "Node.js 20": "ghcr.io\/parkervcp\/yolks:nodejs_20"
+    },
+    "file_denylist": [],
+    "startup": "npm start",
+    "config": {
+        "files": "{\r\n    \"settings.yaml\": {\r\n        \"parser\": \"yaml\",\r\n        \"find\": {\r\n            \"telegram.token\": \"{{env.telegram_token}}\",\r\n            \"discord.token\": \"{{env.discord_token}}\"\r\n        }\r\n    }\r\n}",
+        "startup": "{\r\n    \"done\": \"Successfully reloaded\"\r\n}",
+        "logs": "{}",
+        "stop": "^^C"
+    },
+    "scripts": {
+        "installation": {
+            "script": "## Credits: Red-Thirten (https:\/\/github.com\/lilkingjr1) for providing most of the installation script\r\n## Based on Muse instllation script\r\napt-get update\r\napt-get install git curl jq -y python3 python3-pip make build-essential -qq\r\n\r\nGITHUB_PACKAGE=\"TediCross\/TediCross\"\r\n\r\n# Find GitHub download URL for TediCross for specified version\r\nLATEST_JSON=$(curl --silent \"https:\/\/api.github.com\/repos\/${GITHUB_PACKAGE}\/releases\/latest\")\r\nRELEASES=$(curl --silent \"https:\/\/api.github.com\/repos\/${GITHUB_PACKAGE}\/releases\")\r\n\r\nif [ -z \"${VERSION}\" ] || [ \"${VERSION}\" == \"latest\" ]; then\r\n    DOWNLOAD_URL=$(echo ${LATEST_JSON} | jq -r '.tarball_url')\r\nelse\r\n    VERSION_CHECK=$(echo ${RELEASES} | jq -r --arg VERSION \"${VERSION}\" '.[] | select(.tag_name==$VERSION) | .tag_name')\r\n    if [ \"${VERSION}\" == \"${VERSION_CHECK}\" ]; then\r\n        DOWNLOAD_URL=$(echo ${RELEASES} | jq -r --arg VERSION \"${VERSION}\" '.[] | select(.tag_name==$VERSION) | .tarball_url')\r\n    else\r\n        echo -e \"Could not find version \\\"${VERSION}\\\" of TediCross. Defaulting to latest release...\"\r\n        DOWNLOAD_URL=$(echo ${LATEST_JSON} | jq -r '.tarball_url')\r\n    fi\r\nfi\r\n\r\n# Download TediCross from GitHub & Extract\r\ncd \/mnt\/server\r\necho -e \"Downloading TediCross from GitHub...\"\r\ncurl -L ${DOWNLOAD_URL} -o TediCross.tar.gz\r\necho -e \"Extracting TediCross from tarball...\"\r\ntar -xvzf TediCross.tar.gz --strip-components=1\r\nrm TediCross.tar.gz\r\n\r\n# Verify and clean up TediCross installation\r\nif [ ! -f example.settings.yaml ]; then\r\n    echo -e \"\\nFailed to download release: ${DOWNLOAD_URL}\\n\"\r\n    exit 1\r\nfi\r\ncp -n example.settings.yaml settings.yaml\r\nrm -rf example.settings.yaml .dockerignore Dockerfile .gitignore .github\/\r\nnpm install --omit=dev\r\n\r\necho -e \"\\nTediCross Successfully Installed!\"",
+            "container": "node:lts-bookworm-slim",
+            "entrypoint": "bash"
+        }
+    },
+    "variables": [
+        {
+            "name": "Telegram bot token",
+            "description": "@BotFather",
+            "env_variable": "telegram_token",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "string",
+            "field_type": "text"
+        },
+        {
+            "name": "Discord bot token",
+            "description": "https:\/\/discord.com\/developers\/applications\/",
+            "env_variable": "discord_token",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "string",
+            "field_type": "text"
+        }
+    ]
+}
