@@ -1,0 +1,42 @@
+{
+    "_comment": "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PTERODACTYL PANEL - PTERODACTYL.IO",
+    "meta": {
+        "version": "PTDL_v2",
+        "update_url": null
+    },
+    "exported_at": "2025-07-16T20:55:40+07:00",
+    "name": "lavamusic",
+    "author": "artem0savkin@vk.com",
+    "description": "https:\/\/github.com\/c0ders-io\/lavamusic\/",
+    "features": null,
+    "docker_images": {
+        "Nodejs 22": "ghcr.io\/pelican-eggs\/yolks:nodejs_22"
+    },
+    "file_denylist": [],
+    "startup": "npm start",
+    "config": {
+        "files": "{\r\n    \".env\": {\r\n        \"parser\": \"file\",\r\n        \"find\": {\r\n            \"TOKEN\": \"TOKEN=\\\"{{env.TOKEN}}\\\"\"\r\n        }\r\n    }\r\n}",
+        "startup": "{\r\n    \"done\": \"Node Local Node is ready!\"\r\n}",
+        "logs": "{}",
+        "stop": "^C"
+    },
+    "scripts": {
+        "installation": {
+            "script": "apt-get update\r\napt-get install python3 make g++ ca-certificates openssl tzdata git -yq --no-install-suggests --no-install-recommends --allow-downgrades --allow-remove-essential --allow-change-held-packages\r\n\r\ncd \/mnt\/server\r\n\r\ngit config --global --add safe.directory \/mnt\/server\r\ngit clone https:\/\/github.com\/c0ders-io\/lavamusic.git . || git pull\r\n\r\ncp -n .env.example .env\r\n\r\nnpm install --legacy-peer-deps\r\nnpm install @dotenvx\/dotenvx --save\r\nnpm install node-system-stats@1.2.7\r\nnpm run build\r\n\r\nnpm run db:push\r\n\r\necho \"Install complete!\"",
+            "container": "node:lts-bookworm-slim",
+            "entrypoint": "bash"
+        }
+    },
+    "variables": [
+        {
+            "name": "Discord Token",
+            "description": "",
+            "env_variable": "TOKEN",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string",
+            "field_type": "text"
+        }
+    ]
+}
